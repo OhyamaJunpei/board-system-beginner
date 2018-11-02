@@ -33,6 +33,7 @@
  <form:form modelAttribute="commentForm" action="${pageContext.request.contextPath}/article/insertComment" method="post">
  名前：<form:input path="name"/><br>
  コメント：<form:textarea path="content"/><br>
+<input type="hidden" name="articleId" value="${article.id}"> 
  <input type="submit" value="コメント投稿">
  <hr>
  </form:form>

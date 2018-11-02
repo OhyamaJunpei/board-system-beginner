@@ -87,9 +87,11 @@ public class ArticleController {
 	}
 	
 	@RequestMapping("/insertComment")
-	public String insertComment(CommentForm commentForm, Model model) {
+	public String insertComment(CommentForm commentForm) {
 		Comment comment = new Comment();
 		BeanUtils.copyProperties(commentForm, comment);
+		comment.setArticleId(Integer.parseInt(commentForm.getArticleId()));
+		System.out.println(comment.getArticleId());
 		commentRepository.insert(comment);
 	
 		return "forward:index";
