@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,10 +19,10 @@
 
 <hr>
 
-<form action="${pageContext.request.contextPath}/article/index" method="post">
-投稿者名：<input type="text" name="name"><br>
-投稿内容：<textarea></textarea><br>
+<form:form modelAttribute="articleForm" action="${pageContext.request.contextPath}/article/index" method="post">
+投稿者名：<form:input path="name"/><br>
+投稿内容：<form:textarea path="content"/><br>
 <input type="submit" value="記事投稿">
-</form>
+</form:form>
 </body>
 </html>
