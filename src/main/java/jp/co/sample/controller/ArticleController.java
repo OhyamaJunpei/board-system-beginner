@@ -49,8 +49,8 @@ public class ArticleController {
 	 * @param article
 	 * @return
 	 */
-	@RequestMapping("/articlePost")
-	public String articlePost(Article article) {
+	@RequestMapping("/insertArticle")
+	public String insertArticle(Article article) {
 		Article postArticle = new Article();
 		
 		postArticle.setName(article.getName());

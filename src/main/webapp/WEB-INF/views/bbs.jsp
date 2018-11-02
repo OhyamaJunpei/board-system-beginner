@@ -10,13 +10,11 @@
 <body>
 <h1>掲示板アプリケーション</h1>
 
-<form:form modelAttribute="articleForm" action="${pageContext.request.contextPath}/article/articlePost" method="post">
+<form:form modelAttribute="articleForm" action="${pageContext.request.contextPath}/article/insertArticle" method="post">
 投稿者名：<form:input path="name"/><br>
 投稿内容：<form:textarea path="content"/><br>
 <input type="submit" value="記事投稿">
 </form:form>
-</body>
-</html>
 
 <hr>
 
@@ -26,3 +24,6 @@
   投稿内容:<c:out value="${article.content}"/><br>
 </c:forEach>
 
+
+</body>
+</html>
