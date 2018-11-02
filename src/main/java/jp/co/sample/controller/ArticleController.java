@@ -29,7 +29,7 @@ public class ArticleController {
 	public ArticleForm setUpForm() {
 		return new ArticleForm();
 	}
-	
+
 	/**
 	 * 初期画面を表示するメソッド.
 	 * 
@@ -40,7 +40,25 @@ public class ArticleController {
 	public String index(Model model) {
 		List<Article> articleList = articleRepository.findAll();
 		model.addAttribute("articleList", articleList);
-		return "index";
+		return "bbs";
+	}
+	
+	/**
+	 * 入力された情報を受け取りDBにinsertするメソッド.
+	 * 
+	 * @param article
+	 * @return
+	 */
+	@RequestMapping("/articlePost")
+	public String articlePost(Article article) {
+		Article postArticle = new Article();
+		
+		postArticle.setName(article.getName());
+		postArticle.setContent(article.getContent());
+		
+		articleRepository.insert(postArticle);
+		
+		return "forward:index";
 	}
 	
 }

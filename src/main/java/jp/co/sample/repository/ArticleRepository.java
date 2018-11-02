@@ -2,12 +2,16 @@ package jp.co.sample.repository;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import jp.co.sample.domain.Article;
@@ -38,11 +42,23 @@ public class ArticleRepository {
 	 * @return 記事一覧
 	 */
 	public List<Article> findAll(){
-		String sql = "SELECT id, name, content FROM articles ORDER BY name";
+		String sql = "SELECT id, name, content FROM articles ORDER BY id DESC";
 		
 		List<Article> articleList = template.query(sql, ARTICLE_ROW_MAPPER);
 		
 		return articleList;
+	}
+	
+	private SimpleJdbcInsert insert;
+	
+	/**
+	 * 自動採番されたidを取得するためのメソッド.
+	 */
+	@PostConstruct
+	public void init() {
+		SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert((JdbcTemplate)template.getJdbcOperations());
+		SimpleJdbcInsert withTableName = simpleJdbcInsert.withTableName("articles");
+		insert = withTableName.usingGeneratedKeyColumns("id");
 	}
 	
 	/**
@@ -51,11 +67,17 @@ public class ArticleRepository {
 	 * @param article 記事情報
 	 */
 	public void insert(Article article) {
-		String sql = "INSERT INTO articles(id, name, content) VALUES(:id, :name, :content)";
+//		String sql = "INSERT INTO articles(id, name, content) VALUES(:id, :name, :content)";
+//		
+//		SqlParameterSource param = new BeanPropertySqlParameterSource(article);
+//		
+//		template.update(sql, param);
 		
 		SqlParameterSource param = new BeanPropertySqlParameterSource(article);
 		
-		template.update(sql, param);
+		Number key = insert.executeAndReturnKey(param);
+		article.setId(key.intValue());
+		
 	}
 	
 	/**
