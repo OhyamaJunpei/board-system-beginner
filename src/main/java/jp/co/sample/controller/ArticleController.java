@@ -83,7 +83,7 @@ public class ArticleController {
 		BeanUtils.copyProperties(articleForm, article);
 		articleRepository.insert(article);
 		
-		return "forward:index";
+		return "redirect:index";
 	}
 	
 	@RequestMapping("/insertComment")
@@ -94,6 +94,17 @@ public class ArticleController {
 		System.out.println(comment.getArticleId());
 		commentRepository.insert(comment);
 	
-		return "forward:index";
+		return "redirect:index";
+	}
+	
+	@RequestMapping("/delete")
+	public String delete(CommentForm commentForm) {
+		Comment comment = new Comment();
+		comment.setArticleId(Integer.parseInt(commentForm.getArticleId()));
+		
+		commentRepository.deleteByArticleId(comment.getArticleId());
+		System.out.println(comment.getArticleId());
+		articleRepository.deleteByArticleId(comment.getArticleId());
+		return "redirect:index";
 	}
 }
