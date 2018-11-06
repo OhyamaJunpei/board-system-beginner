@@ -53,7 +53,7 @@ public class CommentRepository {
 	/**
 	 * commentを投稿するメソッド.
 	 * 
-	 * @param comment domain
+	 * @param comment コメント情報
 	 * 
 	 */
 	public void insert(Comment comment) {

@@ -1,11 +1,15 @@
 package jp.co.sample.repository;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +19,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import jp.co.sample.domain.Article;
+import jp.co.sample.domain.Comment;
 
 /**
  * 記事を操作するメソッドをもつrepository.
@@ -36,6 +41,35 @@ public class ArticleRepository {
 		return article;
 	};
 	
+	private static final ResultSetExtractor<List<Article>> ARTICLELIST_RESULT_SET_EXTRACTOR = (rs) -> {
+		Map<Integer, Article> map = new LinkedHashMap<>();
+		Article article = null;
+		while(rs.next()) {
+			Integer articleId = rs.getInt("a_id");
+			article = map.get(articleId);
+			if(article == null) {
+				article = new Article();
+				article.setId(articleId);
+				article.setName(rs.getString("a_name"));
+				article.setContent(rs.getString("a_content"));
+				map.put(articleId, article);
+			}
+			
+			Integer commentId = rs.getInt("c_id");
+			if(commentId != null) {
+				Comment comment = new Comment();
+				comment.setId(commentId);
+				comment.setId(articleId);
+				comment.setName(rs.getString("c_name"));
+				comment.setContent(rs.getString("c_content"));
+				comment.setArticleId(rs.getInt("c_article_id"));
+				article.getCommentList().add(comment);
+			}
+		}
+		
+		return new ArrayList<Article>(map.values());
+	};
+	
 	/**
 	 * 記事一覧を取得するメソッド.
 	 * 
@@ -46,6 +80,13 @@ public class ArticleRepository {
 		
 		List<Article> articleList = template.query(sql, ARTICLE_ROW_MAPPER);
 		
+//		//中級
+//		String sqlMiddle = "SELECT a.id as a_id, a.name as a_name, a.content as a_content, c.id as c_id, c.name as c_name, c.content as c_content, c.article_id as c_article_id "
+//							+ "FROM articles as a LEFT OUTER JOIN comments as c ON a.id = c.article_id";
+//		
+//		
+//		List<Article> articleList = template.query(sqlMiddle, ARTICLELIST_RESULT_SET_EXTRACTOR);
+		
 		return articleList;
 	}
 	
@@ -53,6 +94,7 @@ public class ArticleRepository {
 	
 	/**
 	 * 自動採番されたidを取得するためのメソッド.
+	 * 記事投稿の時のみ使用.
 	 */
 	@PostConstruct
 	public void init() {
@@ -63,6 +105,7 @@ public class ArticleRepository {
 	
 	/**
 	 * 記事を投稿するメソッド.
+	 * insert時に採番されたidを取得.
 	 * 
 	 * @param article 記事情報
 	 */
@@ -92,6 +135,5 @@ public class ArticleRepository {
 		
 		template.update(sql, param);
 	}
-	
 	
 }

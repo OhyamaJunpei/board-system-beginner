@@ -1,5 +1,7 @@
 package jp.co.sample.form;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * コメントの入力フォーム.
  * 
@@ -11,8 +13,10 @@ public class CommentForm {
 	/** コメントした記事のid */
 	private String articleId;
 	/** コメントした人の名前 */
+	@NotBlank(message="コメント者名を入力してください")
 	private String name;
 	/** コメント内容 */
+	@NotBlank(message="コメント内容を入力してください")
 	private String content;
 	
 	/** getter,setter */
